@@ -54,4 +54,22 @@ public class CalculFraisTest {
         assertThat(calculFrais.fraisMensuels(50, new BigDecimal("-200.00"), false))
                 .isEqualByComparingTo("2.00");
     }
+
+    @Test
+    void fraisDeTenueOffertsAuxTitulairesDeMoinsDe26Ans() {
+        // Arrange
+        CalculFrais calculFrais = new CalculFrais();
+        BigDecimal soldeMoyen = new BigDecimal("500.00");
+
+        // Act + Assert : moins de 26 ans, frais de tenue offerts
+        assertThat(calculFrais.fraisMensuels(18, soldeMoyen, false)).isEqualByComparingTo("0.00");
+        assertThat(calculFrais.fraisMensuels(22, soldeMoyen, false)).isEqualByComparingTo("0.00");
+        assertThat(calculFrais.fraisMensuels(25, soldeMoyen, false)).isEqualByComparingTo("0.00");
+
+        // Act + Assert : 26 ans pile, les frais de tenue sont dus
+        assertThat(calculFrais.fraisMensuels(26, soldeMoyen, false)).isEqualByComparingTo("2.00");
+
+        // Act + Assert : au-delà de 26 ans, les frais de tenue sont dus
+        assertThat(calculFrais.fraisMensuels(27, soldeMoyen, false)).isEqualByComparingTo("2.00");
+    }
 }
