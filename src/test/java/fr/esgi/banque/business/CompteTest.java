@@ -73,4 +73,26 @@ class CompteTest {
 				.withMessage("Le découvert autorisé doit être positif ou nul");
 	}
 
+	@Test
+	void crediterNAccepteQuUnMontantStrictementPositif() {
+		// Arrange
+		Compte compte = new Compte("FR001", "Dupont", new BigDecimal("100.00"), new BigDecimal("50.00"));
+
+		// Act + Assert : montant null
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> compte.crediter(null))
+				.withMessage("Le montant à créditer doit être strictement positif");
+
+		// Act + Assert : montant nul
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> compte.crediter(BigDecimal.ZERO))
+				.withMessage("Le montant à créditer doit être strictement positif");
+
+		// Act + Assert : montant négatif
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> compte.crediter(new BigDecimal("-0.01")))
+				.withMessage("Le montant à créditer doit être strictement positif");
+
+
+	}
 }
