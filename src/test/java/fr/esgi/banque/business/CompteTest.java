@@ -48,4 +48,29 @@ class CompteTest {
 				.withMessage("Le titulaire est obligatoire");
 	}
 
+	@Test
+	void verifierSoldeInitialEtDecouvertAutoriseObligatoires() {
+		// Arrange
+		BigDecimal soldeInitial = new BigDecimal("100.00");
+		BigDecimal decouvertAutorise = new BigDecimal("50.00");
+
+		// Act + Assert : solde initial null
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new Compte("FR001", "Dupont", null, decouvertAutorise))
+				.withMessage("Le solde initial et le découvert autorisé sont obligatoires");
+
+		// Act + Assert : découvert autorisé null
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new Compte("FR001", "Dupont", soldeInitial, null))
+				.withMessage("Le solde initial et le découvert autorisé sont obligatoires");
+
+		// Act + Assert : découvert autorisé strictement négatif
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new Compte("FR001", "Dupont", soldeInitial, new BigDecimal("-0.01")))
+				.withMessage("Le découvert autorisé doit être positif ou nul");
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new Compte("FR001", "Dupont", soldeInitial, new BigDecimal("-50")))
+				.withMessage("Le découvert autorisé doit être positif ou nul");
+	}
+
 }
