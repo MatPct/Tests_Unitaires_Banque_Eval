@@ -34,7 +34,7 @@ public class Compte {
 		if (soldeInitial == null || decouvertAutorise == null) {
 			throw new IllegalArgumentException("Le solde initial et le découvert autorisé sont obligatoires");
 		}
-		if (decouvertAutorise.signum() < 0) {
+		if (decouvertAutorise.signum() <= 0) {
 			throw new IllegalArgumentException("Le découvert autorisé doit être positif ou nul");
 		}
 		this.numero = numero;
@@ -55,7 +55,7 @@ public class Compte {
 			throw new IllegalArgumentException("Le montant à débiter doit être strictement positif");
 		}
 		BigDecimal nouveauSolde = solde.subtract(montant);
-		if (nouveauSolde.compareTo(decouvertAutorise.negate()) <= 0) {
+		if (nouveauSolde.compareTo(decouvertAutorise.negate()) < 0) {
 			throw new SoldeInsuffisantException(numero, montant);
 		}
 		solde = nouveauSolde;

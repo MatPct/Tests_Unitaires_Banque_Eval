@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 
 /**
  * Test d'exemple fourni pour vérifier que le projet est bien configuré.
@@ -115,5 +116,23 @@ class CompteTest {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> compte.debiter(new BigDecimal("-0.01")))
 				.withMessage("Le montant à débiter doit être strictement positif");
+	}
+
+	@Test
+	void debiterRespecteLeDecouvertAutorise() {
+		// Arrange : solde 100, découvert autorisé 50, donc limite à -50
+		Compte compte = new Compte("FR001", "Dupont", new BigDecimal("100.00"), new BigDecimal("50.00"));
+
+		// Act + Assert : un débit qui reste au-dessus de la limite est accepté
+		compte.debiter(new BigDecimal("120.00"));
+		assertThat(compte.getSolde()).isEqualByComparingTo("-20.00");
+
+		// Act + Assert : atteindre exactement la limite (-50) est autorisé
+		compte.debiter(new BigDecimal("30.00"));
+		assertThat(compte.getSolde()).isEqualByComparingTo("-50.00");
+
+		// Act + Assert : dépasser la limite, même d'un centime, est refusé
+		assertThatExceptionOfType(SoldeInsuffisantException.class)
+				.isThrownBy(() -> compte.debiter(new BigDecimal("0.01")));
 	}
 }
