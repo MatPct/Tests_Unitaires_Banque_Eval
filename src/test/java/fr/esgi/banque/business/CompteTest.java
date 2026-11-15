@@ -135,4 +135,22 @@ class CompteTest {
 		assertThatExceptionOfType(SoldeInsuffisantException.class)
 				.isThrownBy(() -> compte.debiter(new BigDecimal("0.01")));
 	}
+
+	@Test
+	void estADecouvertQuandLeSoldeEstStrictementNegatif() {
+		// Arrange
+		BigDecimal decouvertAutorise = new BigDecimal("50.00");
+
+		// Act + Assert : solde strictement négatif, donc à découvert
+		assertThat(new Compte("FR001", "Dupont", new BigDecimal("-0.01"), decouvertAutorise).estADecouvert()).isTrue();
+		assertThat(new Compte("FR001", "Dupont", new BigDecimal("-20.00"), decouvertAutorise).estADecouvert()).isTrue();
+
+		// Act + Assert : solde nul sous différentes écritures, pas à découvert
+		assertThat(new Compte("FR001", "Dupont", BigDecimal.ZERO, decouvertAutorise).estADecouvert()).isFalse();
+		assertThat(new Compte("FR001", "Dupont", new BigDecimal("0.00"), decouvertAutorise).estADecouvert()).isFalse();
+
+		// Act + Assert : solde positif, pas à découvert
+		assertThat(new Compte("FR001", "Dupont", new BigDecimal("0.01"), decouvertAutorise).estADecouvert()).isFalse();
+		assertThat(new Compte("FR001", "Dupont", new BigDecimal("100.00"), decouvertAutorise).estADecouvert()).isFalse();
+	}
 }
