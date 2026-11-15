@@ -72,4 +72,23 @@ public class CalculFraisTest {
         // Act + Assert : au-delà de 26 ans, les frais de tenue sont dus
         assertThat(calculFrais.fraisMensuels(27, soldeMoyen, false)).isEqualByComparingTo("2.00");
     }
+
+    @Test
+    void fraisDeTenueOffertsSiSoldeMoyenAtteint1000EurosOuPlus() {
+        // Arrange
+        CalculFrais calculFrais = new CalculFrais();
+        int age = 40;
+
+        // Act + Assert : en dessous du seuil, les frais de tenue sont dus
+        assertThat(calculFrais.fraisMensuels(age, new BigDecimal("999.99"), false)).isEqualByComparingTo("2.00");
+        assertThat(calculFrais.fraisMensuels(age, new BigDecimal("0.00"), false)).isEqualByComparingTo("2.00");
+
+        // Act + Assert : exactement au seuil, les frais de tenue sont offerts
+        assertThat(calculFrais.fraisMensuels(age, new BigDecimal("1000"), false)).isEqualByComparingTo("0.00");
+        assertThat(calculFrais.fraisMensuels(age, new BigDecimal("1000.00"), false)).isEqualByComparingTo("0.00");
+
+        // Act + Assert : au-dessus du seuil, les frais de tenue sont offerts
+        assertThat(calculFrais.fraisMensuels(age, new BigDecimal("1000.01"), false)).isEqualByComparingTo("0.00");
+        assertThat(calculFrais.fraisMensuels(age, new BigDecimal("5000.00"), false)).isEqualByComparingTo("0.00");
+    }
 }
