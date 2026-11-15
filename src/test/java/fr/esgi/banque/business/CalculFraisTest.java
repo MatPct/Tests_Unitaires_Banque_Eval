@@ -91,4 +91,26 @@ public class CalculFraisTest {
         assertThat(calculFrais.fraisMensuels(age, new BigDecimal("1000.01"), false)).isEqualByComparingTo("0.00");
         assertThat(calculFrais.fraisMensuels(age, new BigDecimal("5000.00"), false)).isEqualByComparingTo("0.00");
     }
+
+    @Test
+    void cartePremiumAjouteCinqEuros() {
+        // Arrange
+        CalculFrais calculFrais = new CalculFrais();
+
+        // Act + Assert : tenue due (40 ans, solde moyen modeste), 2,00 + 5,00
+        assertThat(calculFrais.fraisMensuels(40, new BigDecimal("500.00"), true)).isEqualByComparingTo("7.00");
+
+        // Act + Assert : tenue offerte par l'âge (moins de 26 ans), seul le supplément reste dû
+        assertThat(calculFrais.fraisMensuels(20, new BigDecimal("500.00"), true)).isEqualByComparingTo("5.00");
+
+        // Act + Assert : tenue offerte par le solde moyen (1 000 € ou plus), seul le supplément reste dû
+        assertThat(calculFrais.fraisMensuels(40, new BigDecimal("2000.00"), true)).isEqualByComparingTo("5.00");
+
+        // Act + Assert : tenue offerte par l'âge et par le solde moyen, seul le supplément reste dû
+        assertThat(calculFrais.fraisMensuels(20, new BigDecimal("2000.00"), true)).isEqualByComparingTo("5.00");
+
+        // Act + Assert : sans carte premium, aucun supplément
+        assertThat(calculFrais.fraisMensuels(40, new BigDecimal("500.00"), false)).isEqualByComparingTo("2.00");
+        assertThat(calculFrais.fraisMensuels(20, new BigDecimal("2000.00"), false)).isEqualByComparingTo("0.00");
+    }
 }
